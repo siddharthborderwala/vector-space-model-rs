@@ -86,11 +86,11 @@ fn main() {
 
         let mut results = dot_product_map.into_iter().collect::<Vec<_>>();
         results.sort_by(|(a_id, va), (b_id, vb)| {
-            if va > vb {
+            if va < vb {
                 Ordering::Greater
-            } else if va < vb {
+            } else if va > vb {
                 Ordering::Less
-            } else if a_id > b_id {
+            } else if a_id < b_id {
                 Ordering::Greater
             } else {
                 Ordering::Less

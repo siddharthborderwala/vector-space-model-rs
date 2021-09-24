@@ -42,7 +42,9 @@ pub fn build_index() -> IndexData {
         for token in final_tokens {
             counter += 1;
             if let Some(list) = index.get_mut(&token) {
-                list.document_frequency += 1;
+                if !list.dimension_map.contains_key(&doc_id) {
+                    list.document_frequency += 1;
+                }
                 list.dimension_map
                     .entry(doc_id)
                     .and_modify(|f| *f += 1.0)
