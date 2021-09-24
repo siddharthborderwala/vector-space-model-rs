@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use super::{
     posting_list::{DocId, Frequency, PostingList},
-    retrieve_tokens::{get_document_names, get_stop_words, tokenize_document},
+    retrieve_tokens::{get_document_names, get_punctuations, get_stop_words, tokenize_document},
 };
 use tokenizers::Tokenizer;
 
@@ -10,11 +10,13 @@ pub struct IndexData {
     pub normalized_index: HashMap<String, PostingList>,
     pub document_lengths: HashMap<DocId, Frequency>,
     pub stop_words: HashSet<String>,
+    pub punctuations: HashSet<String>,
     pub total_tokens_count: Frequency,
 }
 
 pub fn build_index() -> IndexData {
     let stop_words = get_stop_words().unwrap();
+    let punctuations = get_punctuations().unwrap();
     let tokenizer = Tokenizer::from_pretrained("bert-base-cased", None).unwrap();
     let mut index = HashMap::<String, PostingList>::new();
     let mut document_lengths = HashMap::<DocId, Frequency>::new();
@@ -29,7 +31,7 @@ pub fn build_index() -> IndexData {
         let final_tokens = tokens
             .iter()
             .filter(|&token| {
-                if stop_words.contains(token) {
+                if stop_words.contains(token) || punctuations.contains(token) {
                     false
                 } else {
                     true
@@ -63,6 +65,7 @@ pub fn build_index() -> IndexData {
         normalized_index: index,
         document_lengths,
         stop_words,
+        punctuations,
         total_tokens_count,
     }
 }

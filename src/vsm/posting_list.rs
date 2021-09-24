@@ -6,6 +6,7 @@ pub type Frequency = usize;
 
 pub type TFWeight = f64;
 
+#[derive(Debug)]
 pub struct PostingList {
     pub document_frequency: Frequency,
     pub dimension_map: HashMap<DocId, TFWeight>,

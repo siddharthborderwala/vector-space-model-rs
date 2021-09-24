@@ -11,7 +11,11 @@ pub fn tokenize_document(tokenizer: &Tokenizer, document_path: &str) -> Result<V
     let mut contents = String::new();
     buf_reader.read_to_string(&mut contents)?;
     let tokens = tokenizer.encode(contents, false)?;
-    Ok(tokens.get_tokens().to_vec())
+    Ok(tokens
+        .get_tokens()
+        .iter()
+        .map(|t| t.to_lowercase())
+        .collect::<Vec<String>>())
 }
 
 pub fn get_document_names(dir_path: &str) -> Result<Vec<String>> {
@@ -26,8 +30,8 @@ pub fn get_document_names(dir_path: &str) -> Result<Vec<String>> {
     Ok(doc_paths)
 }
 
-pub fn get_stop_words() -> Result<HashSet<String>> {
-    let file = File::open("data/stopwords.txt")?;
+fn get_words(path: &'static str) -> Result<HashSet<String>> {
+    let file = File::open(path)?;
     let mut buf_reader = BufReader::new(file);
     let mut contents = String::new();
     buf_reader.read_to_string(&mut contents)?;
@@ -35,6 +39,14 @@ pub fn get_stop_words() -> Result<HashSet<String>> {
         .lines()
         .map(|w| w.to_string())
         .collect::<HashSet<String>>())
+}
+
+pub fn get_stop_words() -> Result<HashSet<String>> {
+    get_words("data/stopwords.txt")
+}
+
+pub fn get_punctuations() -> Result<HashSet<String>> {
+    get_words("data/punctuations.txt")
 }
 
 #[cfg(test)]

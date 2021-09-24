@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
-use std::io::stdin;
+use std::fs::File;
+use std::io::{stdin, Write};
 use vsm::indexing::build_index;
 use vsm::posting_list::{DocId, Frequency};
 
@@ -14,11 +15,12 @@ fn get_input() -> String {
 fn get_query_map(
     query: String,
     stop_words: &HashSet<String>,
+    punctuations: &HashSet<String>,
 ) -> HashMap<String, (Frequency, f64, f64)> {
     let tokens = query
         .split_whitespace()
         .map(|token| token.to_lowercase())
-        .filter(|token| !stop_words.contains(token));
+        .filter(|token| !stop_words.contains(token) && !punctuations.contains(token));
     // term-frequency, idf, weight
     let mut query_map = HashMap::<String, (Frequency, f64, f64)>::new();
     for token in tokens {
@@ -33,11 +35,15 @@ fn get_query_map(
 fn main() {
     let index_data = build_index();
     let normalized_index = index_data.normalized_index;
+    let mut f = File::create("data/indexes/normalized.txt").unwrap();
+    f.write_fmt(format_args!("{:#?}", normalized_index))
+        .unwrap();
     let stop_words = index_data.stop_words;
+    let punctuations = index_data.punctuations;
     let total_tokens_count = index_data.total_tokens_count;
     println!("Welcome to VSM based search engine");
     loop {
-        let mut query_map = get_query_map(get_input(), &stop_words);
+        let mut query_map = get_query_map(get_input(), &stop_words, &punctuations);
         // calculate inverse document frequencies
         query_map.iter_mut().for_each(|(key, value)| {
             let df = match normalized_index.get(key) {
@@ -75,9 +81,17 @@ fn main() {
                 Ordering::Less
             }
         });
-        for k in results.get(0..=10) {
-            let v = k[0];
-            println!("Doc {:2} - Relevance {:.4}", v.0, v.1);
+
+        if results.len() < 10 {
+            for v in results {
+                println!("Doc {:2} - Relevance {:.4}", v.0, v.1);
+            }
+        } else {
+            for k in results.get(0..=10) {
+                for v in k {
+                    println!("Doc {:2} - Relevance {:.4}", v.0, v.1);
+                }
+            }
         }
     }
 }
