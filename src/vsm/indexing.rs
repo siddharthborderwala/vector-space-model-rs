@@ -55,6 +55,12 @@ pub fn build_index() -> IndexData {
         total_tokens_count += counter;
     }
     index.iter_mut().for_each(|(_, value)| {
+        value
+            .dimension_map
+            .values_mut()
+            .for_each(|v| *v = 1.0 + v.log10());
+    });
+    index.iter_mut().for_each(|(_, value)| {
         let sum_of_squares: f64 = value.dimension_map.values().fold(0.0, |acc, x| acc + x * x);
         let magnitude = sum_of_squares.sqrt();
         for v in value.dimension_map.values_mut() {
