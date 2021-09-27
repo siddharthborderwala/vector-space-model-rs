@@ -2,6 +2,12 @@
 
 This project is a [rust](https://rustlang.org) implementation of vector-space-model for information retrieval.
 
+## Corpus
+
+I have used the book Pride and Prejudice by Jane Austen as the corpus and each chapter (off the total 61) make up a single document, hence there are 61 documents.
+
+The documents are stored in  [data/documents/](./data/documents/) directory.
+
 ## Running the program
 
 You'll need the rust-toolchain installed on your system to run the project, if you don't want to setup the rust development environment, you can use [gitpod](https://gitpod.io/#https://github.com/siddharthborderwala/vector-space-model-rs) to open and run this project in the browser.
