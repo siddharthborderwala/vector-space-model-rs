@@ -10,7 +10,7 @@ fn get_input() -> String {
     println!("Enter your query:");
     let mut query = String::new();
     stdin().read_line(&mut query).unwrap();
-    query.trim().to_string()
+    query.trim().to_lowercase()
 }
 
 fn get_query_map(
